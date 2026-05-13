@@ -1,0 +1,267 @@
+/* ================================================================
+   LiFu Aesthetic — 丽芙双面视觉系统
+   极昼·圣殿 (light)  /  霁梦·残响 (dark)
+   ================================================================ */
+
+/* ----- 全局噪点纹理层 ----- */
+@layer base {
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .dark body::after {
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* ----- 极昼·圣殿：Classical Sanctuary ----- */
+:root {
+  --lifu-card-border: hsl(var(--primary) / 0.15);
+  --lifu-card-bg: hsl(var(--card));
+  --lifu-card-shadow: 0 2px 16px rgba(180, 140, 60, 0.06), 0 0 0 1px hsl(var(--primary) / 0.08);
+  --lifu-card-shadow-hover: 0 4px 28px rgba(180, 140, 60, 0.12), 0 0 0 1px hsl(var(--primary) / 0.18);
+  --lifu-divider: linear-gradient(to right, transparent, hsl(var(--primary) / 0.25), transparent);
+  --lifu-glow: 0 0 20px rgba(180, 140, 60, 0.15);
+  --lifu-glass-bg: hsl(var(--card) / 0.85);
+  --lifu-glass-border: hsl(var(--primary) / 0.12);
+}
+
+/* ----- 霁梦·残响：Fractured Cosmos ----- */
+.dark {
+  --lifu-card-border: hsl(var(--primary) / 0.2);
+  --lifu-card-bg: hsl(225 22% 10% / 0.6);
+  --lifu-card-shadow: 0 2px 20px rgba(0, 0, 0, 0.4), 0 0 0 1px hsl(var(--primary) / 0.06), inset 0 1px 0 hsl(var(--primary) / 0.03);
+  --lifu-card-shadow-hover: 0 4px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px hsl(var(--primary) / 0.18), 0 0 60px hsl(var(--primary) / 0.06);
+  --lifu-divider: linear-gradient(to right, transparent, hsl(var(--primary) / 0.3), transparent);
+  --lifu-glow: 0 0 30px hsl(var(--primary) / 0.2);
+  --lifu-glass-bg: hsl(225 22% 10% / 0.5);
+  --lifu-glass-border: hsl(var(--primary) / 0.15);
+}
+
+/* ----- 卡片容器增强 ----- */
+@layer components {
+  /* 基础卡片：玻璃态 + 微光边框 */
+  .lifu-card {
+    background: var(--lifu-card-bg);
+    border: 1px solid var(--lifu-card-border);
+    box-shadow: var(--lifu-card-shadow);
+    border-radius: 0.75rem;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: box-shadow 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+                border-color 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+                transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .lifu-card:hover {
+    box-shadow: var(--lifu-card-shadow-hover);
+    border-color: hsl(var(--primary) / 0.28);
+  }
+
+  /* 暗色专属：玻璃面板 */
+  .dark .lifu-glass-panel {
+    background: var(--lifu-glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--lifu-glass-border);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), 0 0 0 0.5px hsl(var(--primary) / 0.08);
+  }
+
+  /* 分割线 */
+  .lifu-divider {
+    height: 1px;
+    border: none;
+    background: var(--lifu-divider);
+    margin: 1.5rem 0;
+  }
+}
+
+/* ----- 文章卡片定制 ----- */
+@layer components {
+  /* PostItemCard 覆盖 */
+  .post-item-card {
+    border: 1px solid var(--lifu-card-border) !important;
+    box-shadow: var(--lifu-card-shadow) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: box-shadow 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+                border-color 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+                transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) !important;
+  }
+  .post-item-card:hover {
+    box-shadow: var(--lifu-card-shadow-hover) !important;
+    border-color: hsl(var(--primary) / 0.3) !important;
+    transform: translateY(-2px);
+  }
+
+  /* 暗色专属：卡片微光扫描线 */
+  .dark .post-item-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .dark .post-item-card::before {
+    content: '';
+    position: absolute;
+    inset: 0; z-index: 0; pointer-events: none; opacity: 0;
+    background: linear-gradient(180deg, transparent 0%, hsl(var(--primary) / 0.04) 50%, transparent 100%);
+    transition: opacity 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .dark .post-item-card:hover::before { opacity: 1; }
+
+  /* 亮色专属：金色边缘微光 */
+  :root .post-item-card {
+    background: hsl(var(--card)) !important;
+  }
+  .post-item-card .bg-gradient-shoka-button {
+    transition: all 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .post-item-card:hover .bg-gradient-shoka-button {
+    box-shadow: var(--lifu-glow);
+  }
+}
+
+/* ----- 暗色卡片背景优化 ----- */
+@layer components {
+  .dark .shadow-box {
+    box-shadow: none;
+  }
+  .dark .shadow-card {
+    box-shadow: var(--lifu-card-shadow) !important;
+  }
+  .dark .shadow-card-darker {
+    box-shadow: var(--lifu-card-shadow-hover) !important;
+  }
+}
+
+/* ----- 全局滚动条主题化 ----- */
+@layer base {
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.3);
+    border-radius: 3px;
+    transition: background 0.3s;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.5);
+  }
+  .dark ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.2);
+  }
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.35);
+  }
+}
+
+/* ----- HUD 装饰线（暗色模式文章分隔） ----- */
+@layer components {
+  .dark .lifu-hud-line {
+    position: relative;
+    padding-left: 0.75rem;
+  }
+  .dark .lifu-hud-line::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0.35rem; bottom: 0.35rem;
+    width: 1.5px;
+    background: linear-gradient(to bottom, transparent, hsl(var(--primary) / 0.5), transparent);
+    border-radius: 1px;
+  }
+
+  /* 亮色：古典装饰线 */
+  .lifu-ornament-line {
+    position: relative;
+  }
+  .lifu-ornament-line::after {
+    content: '❧';
+    position: absolute;
+    right: 0; top: 50%; transform: translateY(-50%);
+    color: hsl(var(--primary) / 0.3);
+    font-size: 1rem;
+  }
+}
+
+/* ----- 文章标题增强 ----- */
+@layer components {
+  .lifu-post-title {
+    transition: color 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
+                text-shadow 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .lifu-post-title:hover {
+    text-shadow: 0 0 12px hsl(var(--primary) / 0.2);
+  }
+  .dark .lifu-post-title:hover {
+    text-shadow: 0 0 20px hsl(var(--primary) / 0.3), 0 0 40px hsl(var(--primary) / 0.1);
+  }
+}
+
+/* ----- 暗色模式：星空闪烁微粒子（模拟深空） ----- */
+@layer components {
+  .dark .realm-particles {
+    opacity: calc(var(--realm-particle-opacity, 0.4) * 1.3) !important;
+    filter: brightness(1.3) contrast(1.1);
+  }
+}
+
+/* ----- 链接 hover 动画增强 ----- */
+@layer base {
+  a:not(.no-lifu-link) {
+    transition: color 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+                text-shadow 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+}
+
+/* ----- 暗色模式标签/badge 样式 ----- */
+@layer components {
+  .dark .badge, .dark [class*="badge"] {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid hsl(var(--primary) / 0.15);
+  }
+}
+
+/* ----- 表格暗色模式 ----- */
+@layer base {
+  .dark table {
+    border-color: hsl(var(--border) / 0.5);
+  }
+  .dark th {
+    background: hsl(225 22% 12% / 0.6);
+    border-bottom: 1.5px solid hsl(var(--primary) / 0.2);
+  }
+  .dark td {
+    border-color: hsl(var(--border) / 0.3);
+  }
+}
+
+/* ----- 代码块暗色微光 ----- */
+@layer components {
+  .dark pre {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.04), inset 0 1px 0 hsl(var(--primary) / 0.03);
+    border: 1px solid hsl(var(--border) / 0.4);
+  }
+}
+
+/* ----- Blockquote 定制 ----- */
+@layer base {
+  blockquote {
+    border-left: 3px solid hsl(var(--primary) / 0.4);
+    background: hsl(var(--primary) / 0.03);
+    transition: border-color 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  blockquote:hover {
+    border-left-color: hsl(var(--primary) / 0.6);
+  }
+  .dark blockquote {
+    border-left-color: hsl(var(--primary) / 0.3);
+    background: hsl(var(--primary) / 0.04);
+  }
+  .dark blockquote:hover {
+    border-left-color: hsl(var(--primary) / 0.5);
+  }
+}

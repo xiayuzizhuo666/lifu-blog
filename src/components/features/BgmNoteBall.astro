@@ -1,0 +1,54 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<div id="bgm-note-ball" class="music-ball fixed bottom-24 right-6 z-40" role="region" aria-label="背景音乐">
+  <button
+    id="bgm-note-ball-btn"
+    class="music-ball-btn flex h-12 w-12 items-center justify-center rounded-full bg-(--primary) shadow-lg ring-2 ring-primary/30 transition-all duration-300 hover:scale-110 hover:shadow-xl active:scale-95 text-black dark:text-white"
+    aria-label="展开音乐面板"
+    title="音乐"
+  >
+    <Icon name="material-symbols:music-note-rounded" class="music-ball-icon text-2xl" aria-hidden="true" />
+    <span class="music-ball-pulse absolute inset-0 rounded-full bg-(--primary) opacity-0"></span>
+  </button>
+</div>
+
+<style>
+  @keyframes music-pulse { 0%, 100% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.4); opacity: 0; } }
+  .music-ball.playing .music-ball-pulse { animation: music-pulse 2s ease-in-out infinite; }
+  .music-ball-btn { cursor: pointer; }
+</style>
+
+<script>
+  (function() {
+    const btn = document.getElementById('bgm-note-ball-btn');
+    if (!btn) return;
+
+    function findAndClickBgm(retries) {
+      if (retries <= 0) return;
+      const bgmToggle = document.querySelector('[data-bgm-toggle]');
+      if (bgmToggle) {
+        bgmToggle.click();
+        return;
+      }
+      // Expand floating toolbar if collapsed, then retry
+      const floatingBtns = document.querySelectorAll('.size-9.flex-center button, button[aria-label*="展开"]');
+      floatingBtns.forEach((b) => (b as HTMLButtonElement).click());
+      setTimeout(() => findAndClickBgm(retries - 1), 200);
+    }
+
+    btn.addEventListener('click', () => {
+      findAndClickBgm(10);
+    });
+
+    // Observe audio for playing state → pulse
+    const obs = new MutationObserver(() => {
+      const audio = document.querySelector('audio');
+      const ball = document.getElementById('bgm-note-ball');
+      if (!ball) return;
+      ball.classList.toggle('playing', !!(audio && !audio.paused));
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+  })();
+</script>

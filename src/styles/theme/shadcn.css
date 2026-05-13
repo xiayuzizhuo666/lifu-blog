@@ -1,0 +1,70 @@
+/* shadCN theme - https://ui.shadcn.com/themes */
+@layer base {
+  :root {
+    --background: 37 68% 97%;
+    --foreground: 244 12% 26%;
+
+    --card: 40 100% 99%;
+    --card-foreground: 244 12% 26%;
+
+    --popover: 40 100% 99%;
+    --popover-foreground: 244 12% 26%;
+
+    --primary: 44 54% 58%;
+    --primary-foreground: 40 80% 98%;
+
+    --secondary: 44 30% 93%;
+    --secondary-foreground: 244 12% 26%;
+
+    --muted: 44 20% 93%;
+    --muted-foreground: 244 8% 46%;
+
+    --accent: 44 25% 92%;
+    --accent-foreground: 244 12% 26%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 37 30% 88%;
+    --input: 37 30% 88%;
+    --ring: 44 54% 58%;
+
+    --badge-primary: 44 49% 50%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 216 13% 15%;
+    --foreground: 0 0% 95%;
+
+    --card: 216 13% 15%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 216 13% 15%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 218 55% 68%;
+    --primary-foreground: 220 40% 92%;
+
+    --secondary: 225 22% 16%;
+    --secondary-foreground: 220 40% 85%;
+
+    --muted: 225 22% 16%;
+    --muted-foreground: 220 20% 60%;
+
+    --accent: 220 30% 18%;
+    --accent-foreground: 220 40% 85%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+
+    --border: 225 20% 20%;
+    --input: 225 20% 20%;
+    --ring: 218 55% 68%;
+
+    --badge-primary: 218 55% 68%;
+
+    --radius: 0.75rem;
+  }
+}

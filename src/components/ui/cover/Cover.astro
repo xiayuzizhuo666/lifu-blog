@@ -1,0 +1,204 @@
+---
+import { Routes } from '@constants/router';
+import { createArticleStatsConfig, siteConfig } from '@constants/site-config';
+import { getPostReadingTime } from '@lib/content/posts';
+import { displayDate } from '@lib/date';
+import { getLqipStyle } from '@lib/lqip';
+import { routeBuilder } from '@lib/route';
+import { Icon } from 'astro-icon/components';
+import type { BlogPost } from 'types/blog';
+import UmamiPVSpan from '@/components/umami/UmamiPVSpan';
+import { MAX_WIDTH } from '@/constants/layout';
+import { getLocaleFromUrl, localizedPath, t } from '@/i18n';
+import WaveSvg from './wave';
+
+export interface CoverProps {
+  data?: BlogPost;
+  title?: string;
+}
+
+const { data, title } = Astro.props as CoverProps;
+
+const { date, updated, title: dataTitle, draft } = data?.data ?? {};
+
+const readState = data ? getPostReadingTime(data) : null;
+const isDraft = import.meta.env.DEV && draft === true;
+
+const allDeskImgs = ['/img/d1.webp', '/img/d2.webp', '/img/d3.webp', '/img/d5.webp', '/img/d6.webp', '/img/d7.webp'];
+const randomImg = allDeskImgs[Math.floor(Math.random() * allDeskImgs.length)];
+
+const bannerLqipStyle = getLqipStyle(randomImg);
+
+const locale = getLocaleFromUrl(Astro.url.pathname);
+
+const href = data && localizedPath(routeBuilder(Routes.Post, data), locale);
+
+const pageStatsConfig = href ? createArticleStatsConfig(href) : null;
+---
+
+<div class="relative flex h-[60dvh] z-0 max-h-200 overflow-hidden">
+  <div class="absolute inset-0 h-full bg-black/40"></div>
+  <div class="absolute inset-0 bottom-[8dvh] flex flex-col items-center justify-center px-5 text-white">
+    {
+      title ? (
+        <h1
+          class={`shadow-text word-break flex items-center gap-2 text-center text-5xl/[1.2] font-bold tracking-widest ${MAX_WIDTH.content}`}
+        >
+          {title}
+          <Icon
+            name="ri:link"
+            title={t(locale, "cover.copyLink")}
+            class="hover:text-primary cursor-pointer transition-colors duration-300"
+            onclick="navigator.clipboard.writeText(window.location.href)"
+          />
+        </h1>
+      ) : data ? (
+        <>
+          <h1
+            class={`shadow-text word-break text-4.5xl text-center font-bold md:text-2xl ${MAX_WIDTH.content} flex flex-wrap items-center justify-center gap-3`}
+          >
+            {dataTitle ?? title}
+            {isDraft && (
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-yellow-500 px-3 py-1.5 text-base font-semibold text-white shadow-lg backdrop-blur-sm text-shadow-none hover:bg-yellow-500 md:px-2.5 md:py-1 md:text-sm">
+                <Icon name="fa6-solid:file-pen" class="h-4 w-4 md:h-3.5 md:w-3.5" />
+                {t(locale, 'post.draft')}
+              </span>
+            )}
+          </h1>
+          {data && (
+            <p class="mt-3 flex flex-wrap items-center justify-center gap-4 md:text-xs">
+              <span class="flex items-center gap-1">
+                <Icon name="fa6-solid:calendar-days" />
+                {t(locale, "post.publishedAt", { date: date && displayDate.datetime(date) })}
+              </span>
+              {updated && (
+                <span class="flex items-center gap-1">
+                  <Icon name="fa6-solid:calendar-days" />
+                  {t(locale, "post.updatedAt", { date: displayDate.datetime(updated) })}
+                </span>
+              )}
+              <span class="flex items-center gap-1">
+                <Icon name="fa6-solid:pen-nib" /> {t(locale, "post.wordCount", { count: readState?.words })}
+              </span>
+              <span class="flex items-center gap-1">
+                <Icon name="fa6-solid:clock" />
+                {readState?.text}
+              </span>
+              {pageStatsConfig && (
+                <span class="flex items-center gap-1">
+                  <Icon name="ri:eye-line" class="h-4 w-4" />
+                  <UmamiPVSpan client:idle statsConfig={pageStatsConfig} />
+                  {t(locale, 'stats.pageviews')}
+                </span>
+              )}
+            </p>
+          )}
+        </>
+      ) : (
+        <>
+          <h2 class="shadow-text font-chill-round text-5xl/[1.2]">{siteConfig?.alternate}</h2>
+          <h1 class="shadow-text font-chill-round mt-3 text-5xl/[1.2] font-bold tracking-widest">{siteConfig?.title}</h1>
+          <p class="shadow-text mt-5 text-sm" id="cover-subtitle">|</p>
+        </>
+      )
+    }
+  </div>
+  <div
+    class="relative -z-10 h-full min-h-60 w-full"
+    transition:persist="page-cover-banner"
+    id="banner-box"
+    style={bannerLqipStyle}
+  >
+    <img
+      src={randomImg}
+      alt="cover"
+      class="h-full w-full object-cover"
+      sizes="50vw"
+      srcset={`${randomImg} 1200w`}
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+      data-imgs={allDeskImgs.join(',')}
+    />
+  </div>
+  <WaveSvg />
+</div>
+
+<script>
+   const allImgs = document.querySelector('#banner-box img')?.getAttribute('data-imgs')?.split(',');
+   if (allImgs && allImgs.length > 1) {
+     document.addEventListener('astro:after-swap', () => {
+       const img = document.querySelector('#banner-box img');
+       if (!img) return;
+       const imgs = img.getAttribute('data-imgs')?.split(',');
+       if (!imgs) return;
+       const randomSrc = imgs[Math.floor(Math.random() * imgs.length)];
+       img.src = randomSrc;
+       img.srcset = randomSrc + ' 1200w';
+     });
+   }
+</script>
+
+<script>
+  (function typewriter() {
+    const el = document.getElementById('cover-subtitle');
+    if (!el) return;
+
+    const pool = [
+      '当阳光拥抱过花朵，光便携带了花香',
+      'When sunlight embraces the flowers, the light carries their fragrance',
+      '晚风掠过人群，风就能学会低吟',
+      'When the evening breeze brushes past the crowd, the wind learns to whisper',
+      '影子在眷恋中消磨过岁月，它也铭记了光的身形',
+      'When a shadow lingers through the years in longing, it remembers the shape of the light',
+    ];
+    const prefix = '= ';
+    const suffix = ' =';
+
+    let sentenceIndex = -1;
+    let full = '';
+    let i = 0;
+    let deleting = false;
+
+    function pickNext() {
+      let next;
+      do { next = Math.floor(Math.random() * pool.length); } while (next === sentenceIndex && pool.length > 1);
+      sentenceIndex = next;
+      full = prefix + pool[sentenceIndex] + suffix;
+      i = 0;
+      deleting = false;
+    }
+
+    function tick() {
+      if (!document.getElementById('cover-subtitle')) return;
+      if (!deleting) {
+        if (i <= full.length) {
+          el.textContent = full.slice(0, i) + (i < full.length ? '|' : '');
+          i++;
+          setTimeout(tick, 100 + Math.random() * 60);
+        } else {
+          deleting = true;
+          setTimeout(tick, 5000);
+        }
+      } else {
+        i--;
+        el.textContent = full.slice(0, Math.max(0, i)) + (i > 0 ? '|' : '|');
+        if (i <= 0) {
+          pickNext();
+          setTimeout(tick, 600);
+        } else {
+          setTimeout(tick, 30 + Math.random() * 20);
+        }
+      }
+    }
+
+    pickNext();
+    el.textContent = '|';
+    setTimeout(tick, 600);
+
+    document.addEventListener('astro:after-swap', () => {
+      const newEl = document.getElementById('cover-subtitle');
+      if (newEl) { pickNext(); el.textContent = '|'; setTimeout(tick, 600); }
+    });
+  })();
+</script>

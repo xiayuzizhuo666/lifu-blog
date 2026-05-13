@@ -1,0 +1,75 @@
+:root {
+  --gradient-bg-start: #FDF8F0;
+  --gradient-bg-end: #EDE0D0;
+  --gradient-bg: linear-gradient(180deg, var(--gradient-bg-start) 10%, var(--gradient-bg-end) 100%);
+  --particle-bg: url('/assets/light-particle.svg');
+  --realm-particle-opacity: 0.6;
+  --gradient-pink: linear-gradient(279deg, #D4A853 0%, #E8C87A 100%);
+  --gradient-header: linear-gradient(-225deg, #FFF8E7 0, #FFE8CC 100%);
+
+  --box-bg-shadow: rgba(0, 0, 0, 0.1);
+  --grey-1-a5: rgba(253, 253, 253, 0.5);
+  --gradient-shoka-button-start: #D4A853;
+  --gradient-shoka-button-end: #E8C87A;
+  --gradient-shoka-button: linear-gradient(to right, var(--gradient-shoka-button-start) 0, var(--gradient-shoka-button-end) 100%);
+  --shoka-blue: 201 69% 54%;
+  --grey-4: 0 0% 80%;
+  --color-pink: #D4A853;
+  --color-pink-a3: rgba(212, 168, 83, 0.3);
+
+  /* Shoka container/effect colors (primary uses --primary from shadcn theme) */
+  --shoka-default: 0 0% 40%;
+  --shoka-info: 210 100% 50%;
+  --shoka-success: 142 76% 36%;
+  --shoka-warning: 45 100% 40%;
+  --shoka-danger: 0 84% 60%;
+
+  /* Named text colors — adapted for light/dark mode readability */
+  --color-red: #e74c3c;
+  --color-pink-text: #D4A853;
+  --color-orange: #f39c12;
+  --color-yellow: #d4a017;
+  --color-green: #27ae60;
+  --color-aqua: #1abc9c;
+  --color-blue: #2e86c1;
+  --color-purple: #8e44ad;
+  --color-grey: #7f8c8d;
+}
+
+.dark {
+  --gradient-bg-start: #0D1428;
+  --gradient-bg-end: #060A18;
+  --gradient-bg: linear-gradient(180deg, var(--gradient-bg-start) 10%, var(--gradient-bg-end) 100%);
+  --particle-bg: url('/assets/dark-particle.svg');
+  --realm-particle-opacity: 0.4;
+  --gradient-header: linear-gradient(-225deg, #111D38 0, #080E20 100%);
+
+  --box-bg-shadow: rgba(0, 0, 0, 0.5);
+  --grey-1-a5: rgba(34, 34, 34, 0.5);
+
+  --gradient-shoka-button-start: #5C94D4cc;
+  --gradient-shoka-button-end: #6EA4E0cc;
+  --gradient-shoka-button: linear-gradient(to right, var(--gradient-shoka-button-start) 0, var(--gradient-shoka-button-end) 100%);
+  --shoka-blue: 218 65% 72%;
+  --grey-4: 0 0% 40%;
+  --color-pink: #6EA4E0;
+  --color-pink-a3: rgba(110, 164, 224, 0.3);
+
+  /* Shoka container/effect colors (dark mode) */
+  --shoka-default: 0 0% 60%;
+  --shoka-info: 210 100% 65%;
+  --shoka-success: 142 76% 50%;
+  --shoka-warning: 45 100% 55%;
+  --shoka-danger: 0 84% 70%;
+
+  /* Named text colors — brighter for dark backgrounds */
+  --color-red: #f87171;
+  --color-pink-text: #6EA4E0;
+  --color-orange: #fbbf24;
+  --color-yellow: #facc15;
+  --color-green: #4ade80;
+  --color-aqua: #2dd4bf;
+  --color-blue: #60a5fa;
+  --color-purple: #c084fc;
+  --color-grey: #9ca3af;
+}

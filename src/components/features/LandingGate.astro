@@ -1,0 +1,374 @@
+---
+const allWallpapers = [
+  '/img/d1.webp', '/img/d2.webp', '/img/d3.webp',
+  '/img/d5.webp', '/img/d6.webp', '/img/d7.webp',
+];
+const randomBg = allWallpapers[Math.floor(Math.random() * allWallpapers.length)];
+---
+
+<style is:global>
+  .landing-gate-hidden #landing-gate { display: none !important; }
+
+  /* ====== 双模式调色板 ====== */
+  :root {
+    --gate-accent: #d4a853;
+    --gate-accent-rgb: 212, 168, 83;
+  }
+  .dark {
+    --gate-accent: #7eaee4;
+    --gate-accent-rgb: 126, 174, 228;
+  }
+
+  .gate-noise-overlay {
+    position: fixed; inset: 0; z-index: 10001; pointer-events: none; opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  #landing-gate {
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; overflow: hidden;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    background: #0a0a0f;
+  }
+  .gate-bg-img {
+    position: absolute; inset: 0; object-fit: cover;
+    opacity: 0.35; filter: saturate(0.7) brightness(0.5);
+  }
+  .gate-bg-gradient {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 65% 50%, rgba(var(--gate-accent-rgb), 0.12) 0%, transparent 60%),
+      radial-gradient(ellipse at 25% 50%, rgba(var(--gate-accent-rgb), 0.04) 0%, transparent 50%);
+    transition: background 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+
+  /* ====== 六边形网格 ====== */
+  .gate-hex-grid {
+    position: absolute; inset: 0; opacity: 0.06;
+    background-color: var(--gate-accent);
+    mask-image: url("data:image/svg+xml,%3Csvg width='60' height='52' viewBox='0 0 60 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L55.98 15v30L30 52L4.02 37V15z' fill='%23fff' stroke='%23fff' stroke-width='0.5'/%3E%3C/svg%3E");
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg width='60' height='52' viewBox='0 0 60 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L55.98 15v30L30 52L4.02 37V15z' fill='%23fff' stroke='%23fff' stroke-width='0.5'/%3E%3C/svg%3E");
+    mask-size: 60px 52px; -webkit-mask-size: 60px 52px;
+    mask-composite: source-in; -webkit-mask-composite: source-in;
+    transition: background-color 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  .gate-hex-vignette {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 60% 45%, transparent 30%, #0a0a0f 70%);
+  }
+
+  /* ====== 扫描线 ====== */
+  @keyframes gateScanline { 0% { top: -2px; } 100% { top: 100%; } }
+  .gate-scanline {
+    position: absolute; left: 0; right: 0; height: 1.5px; z-index: 10; pointer-events: none;
+    background: linear-gradient(to right, transparent, var(--gate-accent), transparent);
+    opacity: 0.3; animation: gateScanline 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    transition: background 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+
+  /* ====== HUD 角标 ====== */
+  .gate-hud-corner {
+    position: absolute; z-index: 5; pointer-events: none;
+    width: 60px; height: 60px;
+    border-color: rgba(var(--gate-accent-rgb), 0.25); border-style: solid;
+    transition: border-color 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  .gate-hud-tl { top: 24px; left: 24px; border-width: 1.5px 0 0 1.5px; }
+  .gate-hud-br { bottom: 24px; right: 24px; border-width: 0 1.5px 1.5px 0; }
+  .gate-hud-tr { top: 24px; right: 24px; border-width: 1.5px 1.5px 0 0; width: 30px; height: 30px; }
+  .gate-hud-bl { bottom: 24px; left: 24px; border-width: 0 0 1.5px 1.5px; width: 30px; height: 30px; }
+
+  /* ====== 逆元装置核心 ====== */
+  @keyframes corePulse { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.03); opacity: 1; } }
+  @keyframes coreRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes ringExpand { 0% { transform: scale(0.9); opacity: 0; } 20% { opacity: 0.35; } 80% { opacity: 0; } 100% { transform: scale(1.25); opacity: 0; } }
+  @keyframes particleFloat { 0%, 100% { transform: translate(0,0) scale(1); opacity: 0; } 30% { opacity: 0.7; } 70% { opacity: 0; } 100% { transform: translate(var(--dx),var(--dy)) scale(0.3); opacity: 0; } }
+
+  .gate-core-container {
+    position: absolute; left: 58%; top: 50%; transform: translate(-50%, -50%);
+    width: 320px; height: 320px; z-index: 3;
+  }
+  .gate-core-outer-ring {
+    position: absolute; inset: -40px; border-radius: 50%;
+    border: 1px solid rgba(var(--gate-accent-rgb), 0.15);
+    animation: coreRotate 30s linear infinite;
+    transition: border-color 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  .gate-core-outer-ring::before {
+    content: ''; position: absolute; inset: -20px; border-radius: 50%;
+    border: 1px dashed rgba(var(--gate-accent-rgb), 0.08);
+    animation: coreRotate 20s linear infinite reverse;
+    transition: border-color 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  .gate-core-hex {
+    position: absolute; inset: 30px;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background: linear-gradient(135deg, rgba(var(--gate-accent-rgb), 0.2) 0%, rgba(var(--gate-accent-rgb), 0.05) 50%, transparent 100%);
+    animation: corePulse 3s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+    transition: background 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  .gate-core-hex-inner {
+    position: absolute; inset: 8px;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    border: 1px solid rgba(var(--gate-accent-rgb), 0.3);
+    transition: border-color 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  .gate-core-icon {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: rgba(var(--gate-accent-rgb), 0.5);
+    transition: color 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  .gate-core-diamond {
+    width: 32px; height: 32px; background: rgba(var(--gate-accent-rgb), 0.4);
+    transform: rotate(45deg);
+    box-shadow: 0 0 30px rgba(var(--gate-accent-rgb), 0.4);
+    transition: background 0.8s cubic-bezier(0.45, 0, 0.55, 1), box-shadow 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  .gate-pulse-ring {
+    position: absolute; inset: -10px; border-radius: 50%;
+    border: 2px solid rgba(var(--gate-accent-rgb), 0.25);
+    animation: ringExpand 2.5s cubic-bezier(0.25, 0, 0.75, 1) infinite;
+    transition: border-color 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  .gate-pulse-ring:nth-child(2) { animation-delay: 0.8s; }
+  .gate-pulse-ring:nth-child(3) { animation-delay: 1.6s; }
+
+  .gate-particle {
+    position: absolute; width: 2px; height: 2px;
+    background: var(--gate-accent); border-radius: 50%;
+    animation: particleFloat 3s cubic-bezier(0.25, 0, 0.75, 1) infinite;
+    transition: background 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+
+  /* ====== 文字区 ====== */
+  .gate-text-area {
+    position: absolute; right: 55%; top: 50%; transform: translateY(-55%);
+    z-index: 4; display: flex; flex-direction: column;
+    padding-left: 4%; max-width: 420px;
+  }
+  .gate-status-label {
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 0.7rem; letter-spacing: 0.35em;
+    color: rgba(var(--gate-accent-rgb), 0.55);
+    margin-bottom: 1.2rem; text-transform: uppercase;
+    transition: color 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  .gate-status-label .gate-blink-sep { animation: gateBlink 1.2s step-end infinite; }
+  @keyframes gateBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  .gate-title {
+    font-family: 'Bear Days', 'ChillRound', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 700;
+    color: rgba(255,255,255,0.92); line-height: 1.15;
+    letter-spacing: 0.06em; margin-bottom: 0.6rem;
+    text-shadow: 0 0 60px rgba(var(--gate-accent-rgb), 0.2);
+    transition: text-shadow 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  .gate-title-accent {
+    color: var(--gate-accent);
+    transition: color 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  .gate-subtitle {
+    font-size: 0.85rem; color: rgba(255,255,255,0.45);
+    letter-spacing: 0.2em; margin-bottom: 2rem;
+    font-family: 'Courier New', 'Consolas', monospace;
+  }
+
+  .gate-status-indicators {
+    display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 2rem;
+  }
+  .gate-status-row {
+    display: flex; align-items: center; gap: 0.6rem;
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 0.65rem; color: rgba(255,255,255,0.35); letter-spacing: 0.15em;
+  }
+  .gate-status-dot {
+    width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(var(--gate-accent-rgb), 0.5);
+    box-shadow: 0 0 6px rgba(var(--gate-accent-rgb), 0.4);
+    transition: background 0.8s cubic-bezier(0.45, 0, 0.55, 1), box-shadow 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  .gate-status-dot.active {
+    background: var(--gate-accent);
+    box-shadow: 0 0 10px rgba(var(--gate-accent-rgb), 0.6);
+  }
+
+  /* ====== 唤醒按钮 ====== */
+  @keyframes btnGlow {
+    0%, 100% { box-shadow: 0 0 20px rgba(var(--gate-accent-rgb), 0.15), 0 0 60px rgba(var(--gate-accent-rgb), 0.05); }
+    50% { box-shadow: 0 0 35px rgba(var(--gate-accent-rgb), 0.3), 0 0 80px rgba(var(--gate-accent-rgb), 0.1); }
+  }
+  #awaken-btn {
+    align-self: flex-start; position: relative; overflow: visible;
+    padding: 0.8rem 2.4rem; cursor: pointer;
+    background: transparent;
+    border: 1px solid rgba(var(--gate-accent-rgb), 0.35);
+    color: var(--gate-accent);
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 0.9rem; letter-spacing: 0.3em;
+    transition: all 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+    clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    animation: btnGlow 2.5s ease infinite;
+    backdrop-filter: blur(4px);
+  }
+  #awaken-btn:hover {
+    border-color: var(--gate-accent); color: #fff;
+    background: rgba(var(--gate-accent-rgb), 0.12);
+    letter-spacing: 0.4em;
+    box-shadow: 0 0 50px rgba(var(--gate-accent-rgb), 0.4), 0 0 100px rgba(var(--gate-accent-rgb), 0.12);
+  }
+  #awaken-btn:active { transform: scale(0.97); }
+
+  .gate-typing-area {
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 0.72rem;
+    color: rgba(var(--gate-accent-rgb), 0.5);
+    letter-spacing: 0.12em; min-height: 1.4rem; margin-bottom: 0.4rem;
+    transition: color 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+
+  /* ====== 加载条 ====== */
+  .gate-bar-container {
+    width: 100%; height: 1.5px; background: rgba(255,255,255,0.06);
+    border-radius: 1px; overflow: hidden; margin: 0.3rem 0 0.9rem 0;
+  }
+  .gate-bar-fill {
+    height: 100%; border-radius: 1px;
+    background: linear-gradient(to right, rgba(var(--gate-accent-rgb), 0.5), var(--gate-accent));
+    box-shadow: 0 0 8px rgba(var(--gate-accent-rgb), 0.3);
+    transition: width 0.1s cubic-bezier(0.22, 0.61, 0.36, 1), background 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+  }
+
+  /* ====== 响应式 ====== */
+  @media (max-width: 768px) {
+    #landing-gate { flex-direction: column; }
+    .gate-core-container { left: 50%; top: 38%; width: 200px; height: 200px; }
+    .gate-text-area { right: auto; left: 50%; top: auto; bottom: 12%; transform: translateX(-50%); padding-left: 0; align-items: center; max-width: 90vw; }
+    #awaken-btn { align-self: center; }
+    .gate-hud-tl, .gate-hud-br { display: none; }
+  }
+</style>
+
+<div id="landing-gate">
+  <img class="gate-bg-img" src={randomBg} alt="" fetchpriority="high" decoding="async" />
+  <div class="gate-bg-gradient"></div>
+  <div class="gate-hex-grid"></div>
+  <div class="gate-hex-vignette"></div>
+  <div class="gate-noise-overlay"></div>
+  <div class="gate-scanline" style="animation-delay:1.5s;"></div>
+
+  <div class="gate-hud-corner gate-hud-tl"></div>
+  <div class="gate-hud-corner gate-hud-br"></div>
+  <div class="gate-hud-corner gate-hud-tr"></div>
+  <div class="gate-hud-corner gate-hud-bl"></div>
+
+  <div class="gate-core-container">
+    <div class="gate-core-outer-ring"></div>
+    <div class="gate-pulse-ring"></div>
+    <div class="gate-pulse-ring"></div>
+    <div class="gate-pulse-ring"></div>
+    <div class="gate-core-hex">
+      <div class="gate-core-hex-inner"></div>
+      <div class="gate-core-icon"><div class="gate-core-diamond"></div></div>
+    </div>
+    <div class="gate-particle" style="top:15%;left:70%;--dx:30px;--dy:-40px;"></div>
+    <div class="gate-particle" style="top:75%;left:20%;--dx:-25px;--dy:35px;animation-delay:1s;"></div>
+    <div class="gate-particle" style="top:40%;left:85%;--dx:20px;--dy:-20px;animation-delay:2s;"></div>
+    <div class="gate-particle" style="top:60%;left:10%;--dx:-30px;--dy:-30px;animation-delay:0.5s;"></div>
+  </div>
+
+  <div class="gate-text-area">
+    <div class="gate-status-label">逆元装置&nbsp;<span class="gate-blink-sep">▍</span>&nbsp;INVERSION</div>
+    <h1 class="gate-title">丽<span class="gate-title-accent">·</span>芙</h1>
+    <div class="gate-subtitle">CONSTRUCT — LIV</div>
+
+    <div class="gate-typing-area" id="landing-typing">▍</div>
+    <div class="gate-bar-container"><div class="gate-bar-fill" id="gate-bar-1" style="width:0%"></div></div>
+
+    <div class="gate-status-indicators">
+      <div class="gate-status-row"><span class="gate-status-dot active"></span><span id="gate-ind-1">意识海深度 · 回廊稳定</span></div>
+      <div class="gate-status-row"><span class="gate-status-dot active"></span><span id="gate-ind-2">逆元装置 · 待机中</span></div>
+      <div class="gate-status-row"><span class="gate-status-dot"></span><span id="gate-ind-3">指挥官链接 · 未认证</span></div>
+    </div>
+
+    <button id="awaken-btn">唤醒机体</button>
+  </div>
+</div>
+
+<script is:inline>
+  (function() {
+    var gate = document.getElementById('landing-gate');
+    var today = new Date().toDateString();
+    var lastPass = localStorage.getItem('gate-passed-date');
+    if (!gate || lastPass === today) {
+      if (gate) gate.remove();
+      return;
+    }
+
+    var typing = document.getElementById('landing-typing');
+    var bar = document.getElementById('gate-bar-1');
+    var btn = document.getElementById('awaken-btn');
+    var ind2 = document.getElementById('gate-ind-2');
+    var ind3 = document.getElementById('gate-ind-3');
+    var dot2 = ind2 ? ind2.previousElementSibling : null;
+    var dot3 = ind3 ? ind3.previousElementSibling : null;
+
+    var pool = ['INITIALIZING INVERSION DEVICE...','逆元装置初始化中...','LINKING CONSCIOUSNESS CORE...','意识核心链接中...','CONSTRUCT LIV · STANDBY','构造体丽芙 · 待命中','COMMANDER SIGNAL DETECTED','检测到指挥官信号','READY FOR DEPLOYMENT','准备出动'];
+    var idx = -1, full = '', i = 0, deleting = false;
+
+    function pickNext() {
+      var n; do { n = Math.floor(Math.random() * pool.length); } while (n === idx && pool.length > 1);
+      idx = n; full = pool[idx]; i = 0; deleting = false;
+    }
+    function tick() {
+      if (!typing) return;
+      if (!deleting) {
+        if (i <= full.length) { typing.textContent = full.slice(0,i) + (i < full.length ? '▍' : ''); i++; setTimeout(tick, 80 + Math.random() * 50); }
+        else { deleting = true; setTimeout(tick, 5000); }
+      } else {
+        i--; typing.textContent = full.slice(0, Math.max(0,i)) + (i > 0 ? '▍' : '▍');
+        if (i <= 0) { pickNext(); setTimeout(tick, 600); }
+        else { setTimeout(tick, 25 + Math.random() * 18); }
+      }
+    }
+    if (typing) { pickNext(); typing.textContent = '▍'; setTimeout(tick, 1000); }
+
+    var barProgress = 0;
+    if (bar) {
+      var barInterval = setInterval(function() {
+        barProgress += Math.random() * 12;
+        if (barProgress >= 100) { barProgress = 100; clearInterval(barInterval); }
+        bar.style.width = Math.min(100, barProgress) + '%';
+      }, 400);
+    }
+
+    if (btn && gate) {
+      btn.addEventListener('click', function() {
+        if (bar) bar.style.width = '100%';
+        if (ind2) ind2.textContent = '逆元装置 · 已激活';
+        if (dot2) dot2.classList.add('active');
+        if (ind3) ind3.textContent = '指挥官链接 · 已认证';
+        if (dot3) dot3.classList.add('active');
+
+        // 读取当前主题色闪烁
+        var accent = getComputedStyle(document.documentElement).getPropertyValue('--gate-accent-rgb').trim() || '212,168,83';
+        var flash = document.createElement('div');
+        flash.style.cssText = 'position:fixed;inset:0;background:rgba(' + accent + ',0.15);z-index:99999;pointer-events:none;transition:opacity 0.6s cubic-bezier(0.22,0.61,0.36,1);';
+        document.body.appendChild(flash);
+        requestAnimationFrame(function() { flash.style.opacity = '0'; });
+
+        var isHome = window.location.pathname === '/' || window.location.pathname === '/zh' || window.location.pathname.startsWith('/zh/');
+        localStorage.setItem('gate-passed-date', new Date().toDateString());
+        gate.style.transition = 'opacity 0.6s cubic-bezier(0.45,0,0.55,1)';
+        gate.style.opacity = '0';
+
+        setTimeout(function() {
+          flash.remove();
+          document.documentElement.classList.add('landing-gate-hidden');
+          gate.remove();
+          if (!isHome) { window.location.href = '/'; }
+        }, 600);
+      });
+    }
+  })();
+</script>
