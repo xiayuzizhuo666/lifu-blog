@@ -17,7 +17,6 @@ import AnnouncementProvider from '@components/announcement/AnnouncementProvider.
 import GlobalBGMPlayer from '@components/bgm/GlobalBGMPlayer';
 import ChristmasEffects from '@components/christmas/ChristmasEffects.astro';
 import LandingGate from '@components/features/LandingGate.astro';
-import CursorGlow from '@components/features/CursorGlow.astro';
 import RealmParticles from '@components/features/RealmParticles.astro';
 import FloatingGroup from '@components/layout/FloatingGroup';
 import Header from '@components/layout/Header.astro';
@@ -380,7 +379,6 @@ const keywords = keywordsOverride || siteConfig.keywords || [siteConfig.title];
     <LandingGate />
     <ChristmasEffects transition:persist="christmas-snowfall" />
     <RealmParticles />
-    <CursorGlow />
     <div class="flex min-h-screen flex-col text-black dark:text-white">
       <Header isPostPage={isPostPage} tocNumbering={post?.data.tocNumbering ?? true} />
       <main class="relative flex grow flex-col gap-4">

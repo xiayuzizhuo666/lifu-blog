@@ -25,9 +25,9 @@ import { Icon } from "astro-icon/components";
     const btn = document.getElementById('bgm-note-ball-btn');
     if (!btn) return;
 
-    function findAndClickBgm(retries) {
+    function findAndClickBgm(retries: number) {
       if (retries <= 0) return;
-      const bgmToggle = document.querySelector('[data-bgm-toggle]');
+      const bgmToggle = document.querySelector('[data-bgm-toggle]') as HTMLElement | null;
       if (bgmToggle) {
         bgmToggle.click();
         return;
