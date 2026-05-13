@@ -1,0 +1,14 @@
+services:
+  lifu-blog:
+    build: .
+    container_name: lifu-blog
+    restart: unless-stopped
+    ports:
+      - "4321:80"
+    environment:
+      - NODE_ENV=production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
