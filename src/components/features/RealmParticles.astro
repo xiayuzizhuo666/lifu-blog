@@ -12,7 +12,7 @@
     z-index: 0;
     background-image: var(--particle-bg, url('/assets/light-particle.svg'));
     background-repeat: repeat;
-    background-size: 200px 200px;
+    background-size: clamp(120px, 15vw, 200px) clamp(120px, 15vw, 200px);
     opacity: var(--realm-particle-opacity, 0.6);
     transition: background-image 0.6s ease-in-out, opacity 0.6s ease-in-out;
   }
