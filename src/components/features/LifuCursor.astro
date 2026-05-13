@@ -1,164 +1,56 @@
 ---
-// 丽芙定制光标 — 极昼鎏金 / 霁梦银蓝 双形态
+// 丽芙定制光标拖尾 — 极昼鎏金 / 霁梦银蓝
 ---
 
 <style is:global>
-  html.custom-cursor,
-  html.custom-cursor a,
-  html.custom-cursor button,
-  html.custom-cursor [role="button"],
-  html.custom-cursor input,
-  html.custom-cursor textarea,
-  html.custom-cursor select {
-    cursor: none !important;
-  }
-
-  #lifu-cursor {
-    position: fixed; top: 0; left: 0; z-index: 10000;
-    width: 20px; height: 20px; pointer-events: none;
-    transform: translate(-50%, -50%);
-    will-change: transform;
-    transition: width 0.2s ease-out, height 0.2s ease-out;
-  }
-  #lifu-cursor::before {
-    content: ''; position: absolute;
-    inset: 3px; border-radius: 2px;
-    background: rgba(255,255,255,0.85);
-    transition: inset 0.2s ease-out, border-radius 0.2s ease-out, opacity 0.2s;
-  }
-  #lifu-cursor::after {
-    content: ''; position: absolute;
-    inset: 0; border-radius: 3px;
-    border: 1.5px solid rgba(var(--lifu-cursor-accent, 212,168,83), 0.7);
-    box-shadow: 0 0 6px rgba(var(--lifu-cursor-accent, 212,168,83), 0.3);
-    transition: border-color 0.8s, border-radius 0.2s, box-shadow 0.2s;
-  }
-
-  #lifu-cursor.hover {
-    width: 36px; height: 36px;
-  }
-  #lifu-cursor.hover::before { inset: 7px; }
-  #lifu-cursor.hover::after {
-    border-radius: 50%;
-    box-shadow: 0 0 14px rgba(var(--lifu-cursor-accent, 212,168,83), 0.5);
-  }
-
-  #lifu-cursor.text {
-    width: 2.5px; height: 1.3em; border-radius: 2px;
-  }
-  #lifu-cursor.text::before { inset: 0; border-radius: 2px; }
-  #lifu-cursor.text::after { border-width: 0; box-shadow: none; }
-
-  #lifu-cursor.click {
-    width: 12px; height: 12px;
-  }
-  #lifu-cursor.click::before { inset: 4px; }
-  #lifu-cursor.click::after {
-    box-shadow: 0 0 10px rgba(var(--lifu-cursor-accent, 212,168,83), 0.6);
-  }
-
-  #lifu-cursor-trail {
-    position: fixed; top: 0; left: 0; z-index: 9999;
+  #lifu-cursor-dot {
+    position: fixed; top: 0; left: 0; z-index: 99999;
     width: 5px; height: 5px; pointer-events: none;
     border-radius: 50%;
-    background: rgba(var(--lifu-cursor-accent, 212,168,83), 0.45);
-    box-shadow: 0 0 5px rgba(var(--lifu-cursor-accent, 212,168,83), 0.3);
+    background: rgba(var(--lifu-cursor-accent, 212,168,83), 0.5);
+    box-shadow: 0 0 8px rgba(var(--lifu-cursor-accent, 212,168,83), 0.4);
     transform: translate(-50%, -50%);
-    transition: background 0.8s;
     will-change: transform;
+    transition: background 0.8s cubic-bezier(0.45, 0, 0.55, 1),
+                box-shadow 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+    opacity: 0;
   }
+  #lifu-cursor-dot.visible { opacity: 1; }
 
   :root { --lifu-cursor-accent: 212, 168, 83; }
   .dark { --lifu-cursor-accent: 126, 174, 228; }
 
-  @media (max-width: 768px), (hover: none), (pointer: coarse) {
-    html.custom-cursor,
-    html.custom-cursor * { cursor: auto !important; }
-    #lifu-cursor, #lifu-cursor-trail { display: none !important; }
+  @media (hover: none), (pointer: coarse) {
+    #lifu-cursor-dot { display: none !important; }
   }
 </style>
 
-<div aria-hidden="true">
-  <div id="lifu-cursor"></div>
-  <div id="lifu-cursor-trail"></div>
-</div>
+<div aria-hidden="true"><div id="lifu-cursor-dot"></div></div>
 
 <script is:inline>
   (function() {
     if (window.matchMedia('(pointer: coarse)').matches || window.matchMedia('(hover: none)').matches) return;
-    if (localStorage.getItem('cursor-disabled')) return;
 
-    var started = false;
-    var raf = 0;
-    var mouseX = -100, mouseY = -100;
-    var curX = -100, curY = -100;
-    var trailX = -100, trailY = -100;
+    var dot, mouseX = 0, mouseY = 0, curX = 0, curY = 0, raf = 0, active = false;
+    var findDot = function() { return document.getElementById('lifu-cursor-dot'); };
 
-    function onMouseMove(e) { mouseX = e.clientX; mouseY = e.clientY; }
-    function onMouseDown() {
-      var c = document.getElementById('lifu-cursor');
-      if (c) c.classList.add('click');
-    }
-    function onMouseUp() {
-      var c = document.getElementById('lifu-cursor');
-      if (c) c.classList.remove('click');
-    }
-    function onTargetCheck(e) {
-      var el = document.elementFromPoint(e.clientX, e.clientY);
-      var c = document.getElementById('lifu-cursor');
-      if (!el || !c) return;
-      var isLink = !!el.closest('a, button, [role="button"], [data-cursor="pointer"]') || el.tagName === 'A' || el.tagName === 'BUTTON';
-      var isText = false;
-      if (!isLink) {
-        var t = el.tagName;
-        isText = t === 'INPUT' || t === 'TEXTAREA' || !!el.closest('[data-cursor="text"]') ||
-                 (t === 'P' || t === 'H1' || t === 'H2' || t === 'H3' || t === 'H4' || t === 'H5' || t === 'H6' ||
-                  t === 'SPAN' || t === 'LI' || t === 'TD' || t === 'TH' || t === 'LABEL' || t === 'BLOCKQUOTE');
+    function onEnter() { active = true; dot = findDot(); if (dot) dot.classList.add('visible'); }
+    function onLeave() { active = false; if (dot) dot.classList.remove('visible'); }
+    function onMove(e) { mouseX = e.clientX; mouseY = e.clientY; }
+
+    function loop() {
+      dot = findDot();
+      if (active && dot) {
+        curX += (mouseX - curX) * 0.08;
+        curY += (mouseY - curY) * 0.08;
+        dot.style.transform = 'translate3d(' + Math.round(curX) + 'px, ' + Math.round(curY) + 'px, 0)';
       }
-      c.classList.toggle('hover', isLink);
-      c.classList.toggle('text', isText && !isLink);
+      raf = requestAnimationFrame(loop);
     }
 
-    function animate() {
-      if (!started) { raf = requestAnimationFrame(animate); return; }
-      curX += (mouseX - curX) * 0.12;
-      curY += (mouseY - curY) * 0.12;
-      trailX += (mouseX - trailX) * 0.06;
-      trailY += (mouseY - trailY) * 0.06;
-
-      var c = document.getElementById('lifu-cursor');
-      var t = document.getElementById('lifu-cursor-trail');
-      if (c) c.style.transform = 'translate3d(' + Math.round(curX) + 'px, ' + Math.round(curY) + 'px, 0)';
-      if (t) t.style.transform = 'translate3d(' + Math.round(trailX) + 'px, ' + Math.round(trailY) + 'px, 0)';
-      raf = requestAnimationFrame(animate);
-    }
-
-    function start() {
-      if (started) return;
-      started = true;
-      document.documentElement.classList.add('custom-cursor');
-      document.addEventListener('mousemove', onMouseMove, { passive: true });
-      document.addEventListener('mousedown', onMouseDown);
-      document.addEventListener('mouseup', onMouseUp);
-      document.addEventListener('mousemove', onTargetCheck, { passive: true });
-      raf = requestAnimationFrame(animate);
-    }
-
-    function stop() {
-      started = false;
-      cancelAnimationFrame(raf);
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mousedown', onMouseDown);
-      document.removeEventListener('mouseup', onMouseUp);
-      document.removeEventListener('mousemove', onTargetCheck);
-    }
-
-    start();
-
-    // Persist across page swaps without duplicating
-    document.addEventListener('astro:before-swap', stop);
-    document.addEventListener('astro:after-swap', start);
-    document.addEventListener('swup:contentReplaced', start);
-    document.addEventListener('swup:willReplaceContent', stop);
+    document.addEventListener('mouseenter', onEnter);
+    document.addEventListener('mouseleave', onLeave);
+    document.addEventListener('mousemove', onMove, { passive: true });
+    raf = requestAnimationFrame(loop);
   })();
 </script>
