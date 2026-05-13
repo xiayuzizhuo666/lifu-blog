@@ -3,164 +3,84 @@
 ---
 
 <style is:global>
-  /* 隐藏默认光标 */
   html.custom-cursor,
-  html.custom-cursor * {
-    cursor: none !important;
-  }
   html.custom-cursor a,
   html.custom-cursor button,
   html.custom-cursor [role="button"],
   html.custom-cursor input,
   html.custom-cursor textarea,
-  html.custom-cursor select,
-  html.custom-cursor [data-cursor="pointer"] {
-    cursor: none !important;
-  }
-  html.custom-cursor input[type="text"],
-  html.custom-cursor textarea,
-  html.custom-cursor [data-cursor="text"] {
+  html.custom-cursor select {
     cursor: none !important;
   }
 
-  /* 光标主体 */
   #lifu-cursor {
-    position: fixed;
-    top: 0; left: 0;
-    width: 20px; height: 20px;
-    pointer-events: none;
-    z-index: 10000;
+    position: fixed; top: 0; left: 0; z-index: 10000;
+    width: 20px; height: 20px; pointer-events: none;
     transform: translate(-50%, -50%);
-    transition: width 0.25s cubic-bezier(0.22, 0.61, 0.36, 1),
-                height 0.25s cubic-bezier(0.22, 0.61, 0.36, 1),
-                border-color 0.8s cubic-bezier(0.45, 0, 0.55, 1);
-    will-change: transform, width, height;
-    mix-blend-mode: difference;
+    will-change: transform;
+    transition: width 0.2s ease-out, height 0.2s ease-out;
   }
   #lifu-cursor::before {
-    content: '';
-    position: absolute;
-    inset: 3px;
-    border-radius: 2px;
-    background: rgba(255,255,255,0.9);
-    transition: inset 0.25s cubic-bezier(0.22, 0.61, 0.36, 1),
-                border-radius 0.25s cubic-bezier(0.22, 0.61, 0.36, 1),
-                background 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+    content: ''; position: absolute;
+    inset: 3px; border-radius: 2px;
+    background: rgba(255,255,255,0.85);
+    transition: inset 0.2s ease-out, border-radius 0.2s ease-out, opacity 0.2s;
   }
   #lifu-cursor::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border: 1.5px solid rgba(var(--lifu-cursor-accent, 212,168,83), 0.8);
-    border-radius: 3px;
-    transition: border-color 0.8s cubic-bezier(0.45, 0, 0.55, 1),
-                border-radius 0.25s cubic-bezier(0.22, 0.61, 0.36, 1),
-                box-shadow 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
-    box-shadow: 0 0 8px rgba(var(--lifu-cursor-accent, 212,168,83), 0.4),
-                0 0 20px rgba(var(--lifu-cursor-accent, 212,168,83), 0.1);
+    content: ''; position: absolute;
+    inset: 0; border-radius: 3px;
+    border: 1.5px solid rgba(var(--lifu-cursor-accent, 212,168,83), 0.7);
+    box-shadow: 0 0 6px rgba(var(--lifu-cursor-accent, 212,168,83), 0.3);
+    transition: border-color 0.8s, border-radius 0.2s, box-shadow 0.2s;
   }
 
-  /* hover 状态 */
-  #lifu-cursor.lifu-cursor-hover {
-    width: 40px; height: 40px;
+  #lifu-cursor.hover {
+    width: 36px; height: 36px;
   }
-  #lifu-cursor.lifu-cursor-hover::before {
-    inset: 8px;
-    background: rgba(255,255,255,0.3);
-  }
-  #lifu-cursor.lifu-cursor-hover::after {
+  #lifu-cursor.hover::before { inset: 7px; }
+  #lifu-cursor.hover::after {
     border-radius: 50%;
-    box-shadow: 0 0 16px rgba(var(--lifu-cursor-accent, 212,168,83), 0.6),
-                0 0 40px rgba(var(--lifu-cursor-accent, 212,168,83), 0.2);
+    box-shadow: 0 0 14px rgba(var(--lifu-cursor-accent, 212,168,83), 0.5);
   }
 
-  /* 文本选择状态 */
-  #lifu-cursor.lifu-cursor-text {
-    width: 3px; height: 1.2em;
-    border-radius: 1.5px;
+  #lifu-cursor.text {
+    width: 2.5px; height: 1.3em; border-radius: 2px;
   }
-  #lifu-cursor.lifu-cursor-text::before {
-    inset: 0;
-    border-radius: 1.5px;
-    background: rgba(255,255,255,0.9);
+  #lifu-cursor.text::before { inset: 0; border-radius: 2px; }
+  #lifu-cursor.text::after { border-width: 0; box-shadow: none; }
+
+  #lifu-cursor.click {
+    width: 12px; height: 12px;
   }
-  #lifu-cursor.lifu-cursor-text::after {
-    border-radius: 1.5px;
-    border-width: 0;
-    box-shadow: none;
+  #lifu-cursor.click::before { inset: 4px; }
+  #lifu-cursor.click::after {
+    box-shadow: 0 0 10px rgba(var(--lifu-cursor-accent, 212,168,83), 0.6);
   }
 
-  /* 点击状态 */
-  #lifu-cursor.lifu-cursor-click {
-    width: 14px; height: 14px;
-  }
-  #lifu-cursor.lifu-cursor-click::before {
-    inset: 4px;
-    background: rgba(255,255,255,1);
-  }
-  #lifu-cursor.lifu-cursor-click::after {
-    box-shadow: 0 0 12px rgba(var(--lifu-cursor-accent, 212,168,83), 0.7);
-  }
-
-  /* 拖尾 */
   #lifu-cursor-trail {
-    position: fixed;
-    top: 0; left: 0;
-    width: 6px; height: 6px;
-    pointer-events: none;
-    z-index: 9999;
+    position: fixed; top: 0; left: 0; z-index: 9999;
+    width: 5px; height: 5px; pointer-events: none;
     border-radius: 50%;
-    background: rgba(var(--lifu-cursor-accent, 212,168,83), 0.5);
-    box-shadow: 0 0 6px rgba(var(--lifu-cursor-accent, 212,168,83), 0.4);
+    background: rgba(var(--lifu-cursor-accent, 212,168,83), 0.45);
+    box-shadow: 0 0 5px rgba(var(--lifu-cursor-accent, 212,168,83), 0.3);
     transform: translate(-50%, -50%);
-    transition: background 0.8s cubic-bezier(0.45, 0, 0.55, 1);
+    transition: background 0.8s;
     will-change: transform;
   }
 
-  /* 光标光环（hover 时外扩） */
-  #lifu-cursor-ring {
-    position: fixed;
-    top: 0; left: 0;
-    width: 0; height: 0;
-    pointer-events: none;
-    z-index: 9998;
-    border-radius: 50%;
-    border: 1px solid rgba(var(--lifu-cursor-accent, 212,168,83), 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
-                height 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
-                opacity 0.4s cubic-bezier(0.22, 0.61, 0.36, 1),
-                border-color 0.8s cubic-bezier(0.45, 0, 0.55, 1);
-    opacity: 0;
-  }
-  #lifu-cursor-ring.active {
-    width: 50px; height: 50px;
-    opacity: 1;
-    animation: cursorRingPulse 2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
-  }
-  @keyframes cursorRingPulse {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
-    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.15; }
-  }
-
-  /* 双模式颜色 */
   :root { --lifu-cursor-accent: 212, 168, 83; }
   .dark { --lifu-cursor-accent: 126, 174, 228; }
 
-  /* 手机上隐藏自定义光标 */
   @media (max-width: 768px), (hover: none), (pointer: coarse) {
     html.custom-cursor,
-    html.custom-cursor * {
-      cursor: auto !important;
-    }
-    #lifu-cursor, #lifu-cursor-trail, #lifu-cursor-ring { display: none !important; }
+    html.custom-cursor * { cursor: auto !important; }
+    #lifu-cursor, #lifu-cursor-trail { display: none !important; }
   }
 </style>
 
 <div aria-hidden="true">
   <div id="lifu-cursor"></div>
   <div id="lifu-cursor-trail"></div>
-  <div id="lifu-cursor-ring"></div>
 </div>
 
 <script is:inline>
@@ -168,63 +88,77 @@
     if (window.matchMedia('(pointer: coarse)').matches || window.matchMedia('(hover: none)').matches) return;
     if (localStorage.getItem('cursor-disabled')) return;
 
-    document.addEventListener('astro:after-swap', init);
-    document.addEventListener('swup:contentReplaced', init);
-    init();
+    var started = false;
+    var raf = 0;
+    var mouseX = -100, mouseY = -100;
+    var curX = -100, curY = -100;
+    var trailX = -100, trailY = -100;
 
-    function init() {
+    function onMouseMove(e) { mouseX = e.clientX; mouseY = e.clientY; }
+    function onMouseDown() {
+      var c = document.getElementById('lifu-cursor');
+      if (c) c.classList.add('click');
+    }
+    function onMouseUp() {
+      var c = document.getElementById('lifu-cursor');
+      if (c) c.classList.remove('click');
+    }
+    function onTargetCheck(e) {
+      var el = document.elementFromPoint(e.clientX, e.clientY);
+      var c = document.getElementById('lifu-cursor');
+      if (!el || !c) return;
+      var isLink = !!el.closest('a, button, [role="button"], [data-cursor="pointer"]') || el.tagName === 'A' || el.tagName === 'BUTTON';
+      var isText = false;
+      if (!isLink) {
+        var t = el.tagName;
+        isText = t === 'INPUT' || t === 'TEXTAREA' || !!el.closest('[data-cursor="text"]') ||
+                 (t === 'P' || t === 'H1' || t === 'H2' || t === 'H3' || t === 'H4' || t === 'H5' || t === 'H6' ||
+                  t === 'SPAN' || t === 'LI' || t === 'TD' || t === 'TH' || t === 'LABEL' || t === 'BLOCKQUOTE');
+      }
+      c.classList.toggle('hover', isLink);
+      c.classList.toggle('text', isText && !isLink);
+    }
+
+    function animate() {
+      if (!started) { raf = requestAnimationFrame(animate); return; }
+      curX += (mouseX - curX) * 0.12;
+      curY += (mouseY - curY) * 0.12;
+      trailX += (mouseX - trailX) * 0.06;
+      trailY += (mouseY - trailY) * 0.06;
+
+      var c = document.getElementById('lifu-cursor');
+      var t = document.getElementById('lifu-cursor-trail');
+      if (c) c.style.transform = 'translate3d(' + Math.round(curX) + 'px, ' + Math.round(curY) + 'px, 0)';
+      if (t) t.style.transform = 'translate3d(' + Math.round(trailX) + 'px, ' + Math.round(trailY) + 'px, 0)';
+      raf = requestAnimationFrame(animate);
+    }
+
+    function start() {
+      if (started) return;
+      started = true;
       document.documentElement.classList.add('custom-cursor');
-
-      var cursor = document.getElementById('lifu-cursor');
-      var trail = document.getElementById('lifu-cursor-trail');
-      var ring = document.getElementById('lifu-cursor-ring');
-      if (!cursor) return;
-
-      var mouseX = 0, mouseY = 0;
-      var cursorX = 0, cursorY = 0;
-      var trailX = 0, trailY = 0;
-
-      function onMouseMove(e) { mouseX = e.clientX; mouseY = e.clientY; }
       document.addEventListener('mousemove', onMouseMove, { passive: true });
-
-      function onMouseDown() { cursor.classList.add('lifu-cursor-click'); }
-      function onMouseUp() { cursor.classList.remove('lifu-cursor-click'); }
       document.addEventListener('mousedown', onMouseDown);
       document.addEventListener('mouseup', onMouseUp);
-
-      // Detect hover/text targets
-      function updateTarget(e) {
-        var el = document.elementFromPoint(e.clientX, e.clientY);
-        if (!el) return;
-        var tag = el.tagName.toLowerCase();
-        var isLink = el.closest('a, button, [role="button"], [data-cursor="pointer"]');
-        var isText = tag === 'input' || tag === 'textarea' || el.closest('[data-cursor="text"]') ||
-                     (tag === 'p' || tag === 'h1' || tag === 'h2' || tag === 'h3' || tag === 'h4' || tag === 'h5' || tag === 'h6' || tag === 'span' || tag === 'li' || tag === 'td' || tag === 'th' || tag === 'label');
-
-        if (isLink) { cursor.classList.add('lifu-cursor-hover'); ring.classList.add('active'); }
-        else { cursor.classList.remove('lifu-cursor-hover'); ring.classList.remove('active'); }
-
-        if (isText && !isLink) { cursor.classList.add('lifu-cursor-text'); }
-        else { cursor.classList.remove('lifu-cursor-text'); }
-      }
-      document.addEventListener('mousemove', function(e) { updateTarget(e); }, { passive: true });
-
-      // Animation loop
-      function animate() {
-        var dx = mouseX - cursorX;
-        var dy = mouseY - cursorY;
-        cursorX += dx * 0.15;
-        cursorY += dy * 0.15;
-        trailX += (mouseX - trailX) * 0.08;
-        trailY += (mouseY - trailY) * 0.08;
-
-        cursor.style.transform = 'translate(' + cursorX + 'px, ' + cursorY + 'px) translate(-50%, -50%)';
-        trail.style.transform = 'translate(' + trailX + 'px, ' + trailY + 'px) translate(-50%, -50%)';
-        ring.style.transform = 'translate(' + cursorX + 'px, ' + cursorY + 'px) translate(-50%, -50%)';
-
-        requestAnimationFrame(animate);
-      }
-      requestAnimationFrame(animate);
+      document.addEventListener('mousemove', onTargetCheck, { passive: true });
+      raf = requestAnimationFrame(animate);
     }
+
+    function stop() {
+      started = false;
+      cancelAnimationFrame(raf);
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('mousemove', onTargetCheck);
+    }
+
+    start();
+
+    // Persist across page swaps without duplicating
+    document.addEventListener('astro:before-swap', stop);
+    document.addEventListener('astro:after-swap', start);
+    document.addEventListener('swup:contentReplaced', start);
+    document.addEventListener('swup:willReplaceContent', stop);
   })();
 </script>
