@@ -17,6 +17,7 @@ import AnnouncementProvider from '@components/announcement/AnnouncementProvider.
 import GlobalBGMPlayer from '@components/bgm/GlobalBGMPlayer';
 import ChristmasEffects from '@components/christmas/ChristmasEffects.astro';
 import LandingGate from '@components/features/LandingGate.astro';
+import LifuCursor from '@components/features/LifuCursor.astro';
 import RealmParticles from '@components/features/RealmParticles.astro';
 import FloatingGroup from '@components/layout/FloatingGroup';
 import Header from '@components/layout/Header.astro';
@@ -377,6 +378,7 @@ const keywords = keywordsOverride || siteConfig.keywords || [siteConfig.title];
       })();
     </script>
     <LandingGate />
+    <LifuCursor />
     <ChristmasEffects transition:persist="christmas-snowfall" />
     <RealmParticles />
     <div class="flex min-h-screen flex-col text-black dark:text-white">
