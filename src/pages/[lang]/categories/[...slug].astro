@@ -1,6 +1,7 @@
 ---
-import { getCategoryByLink, getCategoryLinks, getCategoryList } from '@lib/content';
+import { addCategoryRecursively, getCategoryByLink, getCategoryLinks, getCategoryList } from '@lib/content';
 import { defaultLocale, localeList } from '@/i18n/config';
+import yamlConfig from '../../../../config/site.yaml';
 import CategoryPage from '../../categories/[...slug].astro';
 
 export async function getStaticPaths() {
@@ -9,6 +10,12 @@ export async function getStaticPaths() {
 
   for (const lang of nonDefaultLocales) {
     const { categories } = await getCategoryList(lang);
+    // Also generate paths for all categoryMap entries (even empty ones)
+    if (yamlConfig.categoryMap) {
+      for (const name of Object.keys(yamlConfig.categoryMap)) {
+        addCategoryRecursively(categories, [], name);
+      }
+    }
     const links = getCategoryLinks(categories, '');
 
     for (const link of links) {
