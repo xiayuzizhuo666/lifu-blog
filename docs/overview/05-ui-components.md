@@ -2,7 +2,7 @@
 
 ## 设计理念
 
-astro-koharu 的 UI 组件库遵循 **shadcn/ui** 的设计理念：
+lifu-blog 的 UI 组件库遵循 **shadcn/ui** 的设计理念：
 
 1. **组件即代码**：组件直接存放在项目中，可完全自定义
 2. **CVA 变体系统**：使用 class-variance-authority 管理样式变体

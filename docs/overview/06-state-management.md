@@ -2,7 +2,7 @@
 
 ## 为什么选择 Nanostores？
 
-astro-koharu 使用 **Nanostores** 进行全局状态管理，而非更流行的 Redux 或 Zustand。原因如下：
+lifu-blog 使用 **Nanostores** 进行全局状态管理，而非更流行的 Redux 或 Zustand。原因如下：
 
 | 特性 | Nanostores | Redux | Zustand |
 |------|-----------|-------|---------|

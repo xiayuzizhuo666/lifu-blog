@@ -2,7 +2,7 @@
 
 ## 概述
 
-astro-koharu 的内容系统基于 **Astro Content Collections**，这是 Astro 原生的内容管理方案。它提供了类型安全的内容查询、Markdown/MDX 支持、以及灵活的 Schema 验证。
+lifu-blog 的内容系统基于 **Astro Content Collections**，这是 Astro 原生的内容管理方案。它提供了类型安全的内容查询、Markdown/MDX 支持、以及灵活的 Schema 验证。
 
 本项目的内容系统还包含了一套复杂的**分类系统**，用于处理从 Hexo 迁移过来的多层级分类结构。
 

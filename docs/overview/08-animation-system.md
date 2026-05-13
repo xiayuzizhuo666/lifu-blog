@@ -2,7 +2,7 @@
 
 ## 概述
 
-astro-koharu 使用 **Motion**（Framer Motion 的继任者）作为动画库，结合设计令牌系统提供一致的动画体验。
+lifu-blog 使用 **Motion**（Framer Motion 的继任者）作为动画库，结合设计令牌系统提供一致的动画体验。
 
 ### 动画层次
 

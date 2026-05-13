@@ -1,6 +1,6 @@
 # 链接嵌入功能
 
-![](https://r2.cosine.ren/i/2026/01/6804aa167fd4cf7022a9b511d52017ce.webp)
+![](https://example.com/image.webp)
 
 自动将独行的 Twitter/X、CodePen 链接转换为嵌入组件,并为其他链接显示 OG 预览卡片。
 

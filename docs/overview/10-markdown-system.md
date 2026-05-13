@@ -1,6 +1,6 @@
 # Markdown 解析与样式系统
 
-本文档详细介绍 astro-koharu 博客项目中的 Markdown 解析、渲染和样式美化系统。
+本文档详细介绍 lifu-blog 博客项目中的 Markdown 解析、渲染和样式美化系统。
 
 ## 目录
 
@@ -519,7 +519,7 @@ const jsonLd = {
 
 ## 总结
 
-astro-koharu 的 Markdown 系统通过以下技术栈提供了强大而优雅的内容渲染能力：
+lifu-blog 的 Markdown 系统通过以下技术栈提供了强大而优雅的内容渲染能力：
 
 - **Astro + Rehype** - 灵活的 Markdown 处理管线
 - **Shiki** - 高质量的语法高亮

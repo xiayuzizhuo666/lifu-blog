@@ -1,6 +1,6 @@
 # Deployment Adapters
 
-astro-koharu 支持自动检测部署平台并选择对应的适配器。
+lifu-blog 支持自动检测部署平台并选择对应的适配器。
 
 ## 支持的平台
 
@@ -16,7 +16,7 @@ astro-koharu 支持自动检测部署平台并选择对应的适配器。
 
 1. 连接 GitHub 仓库到 Vercel
 2. 自动检测并使用 `@astrojs/vercel` 适配器
-3. 一键部署：[Deploy with Vercel](https://vercel.com/new/clone?repository-url=https://github.com/cosZone/astro-koharu)
+3. 一键部署：[Deploy with Vercel](https://vercel.com/new/clone?repository-url=https://github.com/cosZone/lifu-blog)
 
 ### Netlify
 

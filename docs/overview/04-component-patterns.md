@@ -2,7 +2,7 @@
 
 ## 组件类型选择
 
-在 astro-koharu 中，组件分为两大类：**Astro 组件**和 **React 组件**。选择哪种类型取决于组件的功能需求。
+在 lifu-blog 中，组件分为两大类：**Astro 组件**和 **React 组件**。选择哪种类型取决于组件的功能需求。
 
 ### 选择指南
 
@@ -225,8 +225,8 @@ const FallbackComponent = () => {
   return (
     <div className="flex-center-y w-full gap-2 py-6">
       Oops, Something wrong! Please contact to{' '}
-      <a href="mailto:i@cosine.ren" className="text-blue-500">
-        i@cosine.ren
+      <a href="mailto:i@example.com" className="text-blue-500">
+        i@example.com
       </a>
       or
       <Button onClick={() => window.location.reload()}>
